@@ -1,0 +1,70 @@
+<template>
+    <div class="w-full grid place-items-center">
+        <form @submit.prevent="saveData" class="w-96">
+            <div>
+                <label for="name" class="block text-sm font-medium leading-6 text-gray-900">Nombre</label>
+                <div class="mt-2">
+                    <input id="name" name="name" type="text" autocomplete="email" required v-model="FormData.name"
+                        class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                </div>
+            </div>
+            <div>
+                <label for="model" class="block text-sm font-medium leading-6 text-gray-900">Modelo</label>
+                <div class="mt-2">
+                    <input id="model" name="model" type="text" autocomplete="model" required v-model="FormData.model"
+                        class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                </div>
+            </div>
+            <div>
+                <label for="price" class="block text-sm font-medium leading-6 text-gray-900">Precio</label>
+                <div class="mt-2">
+                    <input id="price" name="price" type="text" autocomplete="price" required v-model="FormData.price"
+                        class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                </div>
+            </div>
+            <div>
+                <label for="description" class="block text-sm font-medium leading-6 text-gray-900">Descripcion</label>
+                <div class="mt-2">
+                    <textarea name="description" id="description" rows="2" required v-model="FormData.description"
+                        class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></textarea>
+                </div>
+            </div>
+            <div class="mt-5">
+                <button type="submit" class="btn-success">Guardar</button>
+            </div>
+        </form>
+    </div>
+</template>
+
+<script setup lang="ts">
+
+import type { Smartphone } from '../../../../interfaces';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+import { ref } from 'vue';
+
+const FormData = ref<Smartphone>({
+    name: '',
+    model: '',
+    price: '0',
+    description: ''
+});
+
+const saveData = async (): Promise<void> => {
+    try {
+        await axios.post<Smartphone>('http://localhost:3000/api/products', FormData);
+        Swal.fire({
+            icon: 'success',
+            title: 'Producto creada correctamente',
+            showConfirmButton: false,
+            timer: 1000
+        })
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Se ha producido un error',
+            text: 'Intente nuevamente',
+        })
+    }
+}
+</script>
