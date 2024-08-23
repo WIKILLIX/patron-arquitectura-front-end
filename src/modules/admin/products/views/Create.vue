@@ -9,10 +9,15 @@
                 </div>
             </div>
             <div>
-                <label for="model" class="block text-sm font-medium leading-6 text-gray-900">Modelo</label>
+                <label for="brand" class="block text-sm font-medium leading-6 text-gray-900">Marca</label>
                 <div class="mt-2">
-                    <input id="model" name="model" type="text" autocomplete="model" required v-model="FormData.model"
+                    <select name="brand" id="brand" v-model="FormData.brand"
                         class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <option value="1">Apple</option>
+                        <option value="2">Samsung</option>
+                        <option value="3">Xiaomi</option>
+                    </select>
+
                 </div>
             </div>
             <div>
@@ -45,7 +50,7 @@ import { ref } from 'vue';
 
 const FormData = ref<Smartphone>({
     name: '',
-    model: '',
+    brand: '',
     price: '0',
     description: ''
 });
