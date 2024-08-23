@@ -2,7 +2,7 @@
     <div class="w-full grid place-items-center">
         <form @submit.prevent="saveData" class="w-96">
             <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-                <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                <div class="bg-white py-8 px-4 sm:rounded-lg sm:px-10">
                     <form @submit.prevent="saveData">
                         <div>
                             <label for="email"
