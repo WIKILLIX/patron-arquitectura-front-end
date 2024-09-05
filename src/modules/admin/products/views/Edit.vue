@@ -9,10 +9,15 @@
                 </div>
             </div>
             <div>
-                <label for="model" class="block text-sm font-medium leading-6 text-gray-900">Modelo</label>
+                <label for="brand" class="block text-sm font-medium leading-6 text-gray-900">Marca</label>
                 <div class="mt-2">
-                    <input id="model" name="model" type="text" autocomplete="model" required v-model="FormData.model"
+                    <select name="brand" id="brand" v-model="FormData.brand"
                         class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <option value="1">Apple</option>
+                        <option value="2">Samsung</option>
+                        <option value="3">Xiaomi</option>
+                    </select>
+
                 </div>
             </div>
             <div>
@@ -48,7 +53,7 @@ const route = useRoute();
 const FormData = ref<Smartphone>({
     id: 0,
     name: '',
-    model: '',
+    brand: '',
     price: '0',
     description: ''
 });
@@ -59,10 +64,10 @@ const getElementById = async (id: number): Promise<void> => {
         // const response = await axios.get(`http://localhost:3000/api/products/${id}`);
         const response = {
             id: 1,
-            name: 'Apple MacBook Pro 17"',
-            model: 'Silver',
+            name: 'iphone 15 pro max',
+            brand: '1',
             price: '1700000',
-            description: 'Laptop'
+            description: 'Un teléfono muy caro'
         };
 
         FormData.value = response;

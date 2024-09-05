@@ -15,7 +15,7 @@
                         Producto
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        modelo
+                        marca
                     </th>
                     <th scope="col" class="px-6 py-3">
                         precio
@@ -31,10 +31,10 @@
                         1
                     </th>
                     <td class="px-6 py-4">
-                        Apple MacBook Pro 17"
+                        iphone 15 pro max
                     </td>
                     <td class="px-6 py-4">
-                        Laptop
+                        apple
                     </td>
                     <td>
                         1700000
