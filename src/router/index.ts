@@ -42,6 +42,61 @@ const router = createRouter({
 					]
 				},
 				{
+					path: '/admin/categories',
+					name: 'Categories',
+					component: {
+						render() {
+							return h(resolveComponent('router-view'))
+						},
+					},
+					redirect: '/admin/categories/list',
+					children: [
+						{
+							path: '/admin/categories/list',
+							name: 'categoryList',
+							component: () => import('../modules/admin/categories/List.vue')
+						},
+						{
+							path: '/admin/categories/create',
+							name: 'categoryCreate',
+							component: () => import('../modules/admin/categories/views/Create.vue')
+						},
+						{
+							path: '/admin/categories/edit/:id',
+							name: 'categoryEdit',
+							component: () => import('../modules/admin/categories/views/Edit.vue')
+						}
+					]
+				},
+				{
+					path: '/admin/brands',
+					name: 'Brands',
+					component: {
+						render() {
+							return h(resolveComponent('router-view'))
+						},
+					},
+					redirect: '/admin/brands/list',
+					children: [
+						{
+							path: '/admin/brands/list',
+							name: 'brandList',
+							component: () => import('../modules/admin/brands/views/List.vue')
+						},
+						{
+							path: '/admin/brands/create',
+							name: 'brandCreate',
+							component: () => import('../modules/admin/brands/views/Create.vue')
+						},
+						{
+							path: '/admin/brands/edit/:id',
+							name: 'brandEdit',
+							component: () => import('../modules/admin/brands/views/Edit.vue')
+						}
+
+					]
+				},
+				{
 					path: '/admin/users',
 					name: 'Users',
 					component: {

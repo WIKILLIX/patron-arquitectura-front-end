@@ -4,4 +4,6 @@ export interface Smartphone {
     model: string;
     price: string;
     description: string;
+    brandId: number;
+    categoryId: number;
 }

@@ -16,6 +16,25 @@
                 </div>
             </div>
             <div>
+                <label for="model" class="block text-sm font-medium leading-6 text-gray-900">Categoria</label>
+                <div class="mt-2">
+                    <select id="category" name="category" required v-model="FormData.categoryId"
+                        class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <option v-for="category in categories" :key="category.id" :value="category">{{ category.name
+                            }}</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <label for="model" class="block text-sm font-medium leading-6 text-gray-900">Marca</label>
+                <div class="mt-2">
+                    <select id="brand" name="brand" required v-model="FormData.brandId"
+                        class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <option v-for="brand in brands" :key="brand.id" :value="brand">{{ brand.name }}</option>
+                    </select>
+                </div>
+            </div>
+            <div>
                 <label for="price" class="block text-sm font-medium leading-6 text-gray-900">Precio</label>
                 <div class="mt-2">
                     <input id="price" name="price" type="text" autocomplete="price" required v-model="FormData.price"
@@ -38,7 +57,8 @@
 
 <script setup lang="ts">
 
-import type { Smartphone } from '../../../../interfaces';
+import router from '@/router';
+import type { Category, Smartphone } from '../../../../interfaces';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { ref } from 'vue';
@@ -47,18 +67,54 @@ const FormData = ref<Smartphone>({
     name: '',
     model: '',
     price: '0',
-    description: ''
+    description: '',
+    categoryId: 1,
+    brandId: 1
 });
+
+const categories = ref<Category[]>([]);
+
+const brands = ref<Category[]>([]);
+
+const getCategories = async () => {
+    try {
+        const { data } = await axios.get('http://localhost:8080/api/v1/categories');
+        categories.value = data;
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Algo salio mal!',
+        });
+    }
+}
+
+const getBrands = async () => {
+    try {
+        const { data } = await axios.get('http://localhost:8080/api/v1/brands');
+        brands.value = data;
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Algo salio mal!',
+        });
+    }
+}
 
 const saveData = async (): Promise<void> => {
     try {
-        await axios.post<Smartphone>('http://localhost:3000/api/products', FormData);
+        console.log(FormData.value);
+        await axios.post<Smartphone>('http://localhost:8080/api/v1/products', FormData.value);
         Swal.fire({
             icon: 'success',
             title: 'Producto creada correctamente',
             showConfirmButton: false,
             timer: 1000
         })
+        setTimeout(() => {
+            router.push({ name: 'Products' });
+        }, 1000);
     } catch (error) {
         Swal.fire({
             icon: 'error',
@@ -67,4 +123,7 @@ const saveData = async (): Promise<void> => {
         })
     }
 }
+
+getCategories();
+getBrands();
 </script>
