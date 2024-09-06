@@ -44,7 +44,7 @@
 import { RouterLink } from 'vue-router';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import type { Brand } from '@/interfaces';
 
 const brands = ref<Brand[]>();
@@ -61,8 +61,6 @@ const getData = async () => {
         });
     }
 };
-
-getData();
 
 const deleteProduct = (id: number) => {
     Swal.fire({
@@ -94,4 +92,8 @@ const deleteProduct = (id: number) => {
         }
     });
 };  
+
+onMounted(() => {
+    getData();
+});
 </script>

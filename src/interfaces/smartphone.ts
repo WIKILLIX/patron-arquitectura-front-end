@@ -1,9 +1,14 @@
 export interface Smartphone {
     id?: number;
     name: string;
-    brand: string;
     price: string;
     description: string;
-    brandId: number;
-    categoryId: number;
+    brand: {
+        id: number,
+        name?: string
+    }
+    category: {
+        id: number,
+        name?: string
+    }
 }

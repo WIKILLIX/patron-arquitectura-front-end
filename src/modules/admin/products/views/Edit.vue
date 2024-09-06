@@ -9,15 +9,22 @@
                 </div>
             </div>
             <div>
-                <label for="brand" class="block text-sm font-medium leading-6 text-gray-900">Marca</label>
+                <label for="model" class="block text-sm font-medium leading-6 text-gray-900">Categoria</label>
                 <div class="mt-2">
-                    <select name="brand" id="brand" v-model="FormData.brand"
+                    <select id="category" name="category" required v-model="FormData.category.id"
                         class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        <option value="1">Apple</option>
-                        <option value="2">Samsung</option>
-                        <option value="3">Xiaomi</option>
+                        <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name
+                            }}</option>
                     </select>
-
+                </div>
+            </div>
+            <div>
+                <label for="model" class="block text-sm font-medium leading-6 text-gray-900">Marca</label>
+                <div class="mt-2">
+                    <select id="brand" name="brand" required v-model="FormData.brand.id"
+                        class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <option v-for="brand in brands" :key="brand.id" :value="brand.id">{{ brand.name }}</option>
+                    </select>
                 </div>
             </div>
             <div>
@@ -42,35 +49,61 @@
 </template>
 
 <script setup lang="ts">
+import router from '@/router';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import Swal from 'sweetalert2';
 import { useRoute } from 'vue-router';
-import type { Smartphone } from '../../../../interfaces';
+import type { Smartphone, Category, Brand } from '../../../../interfaces';
 
 const route = useRoute();
 
 const FormData = ref<Smartphone>({
-    id: 0,
     name: '',
-    brand: '',
     price: '0',
-    description: ''
+    description: '',
+    brand: {
+        id: 0,
+    },
+    category: {
+        id: 0,
+    }
 });
 
+const categories = ref<Category[]>([]);
+
+const brands = ref<Brand[]>([]);
+
+const getCategories = async () => {
+    try {
+        const { data } = await axios.get('http://localhost:8080/api/v1/categories');
+        categories.value = data;
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Algo salio mal!',
+        });
+    }
+}
+
+const getBrands = async () => {
+    try {
+        const { data } = await axios.get('http://localhost:8080/api/v1/brands');
+        brands.value = data;
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Algo salio mal!',
+        });
+    }
+}
 
 const getElementById = async (id: number): Promise<void> => {
     try {
-        // const response = await axios.get(`http://localhost:3000/api/products/${id}`);
-        const response = {
-            id: 1,
-            name: 'iphone 15 pro max',
-            brand: '1',
-            price: '1700000',
-            description: 'Un teléfono muy caro'
-        };
-
-        FormData.value = response;
+        const { data } = await axios.get<Smartphone>(`http://localhost:8080/api/v1/products/${id}`);
+        FormData.value = data;
     } catch (error) {
         Swal.fire({
             icon: 'error',
@@ -82,13 +115,16 @@ const getElementById = async (id: number): Promise<void> => {
 
 const updateData = async (): Promise<void> => {
     try {
-        await axios.put<Smartphone>(`http://localhost:3000/api/products/${FormData.value.id}`, FormData);
+        await axios.post<Smartphone>(`http://localhost:8080/api/v1/products`, FormData.value);
         Swal.fire({
             icon: 'success',
             title: 'Producto actualizado correctamente',
             showConfirmButton: false,
             timer: 1000
         })
+        setTimeout(() => {
+            router.push({ name: 'Products' });
+        }, 1000);
     } catch (error) {
         Swal.fire({
             icon: 'error',
@@ -101,7 +137,9 @@ const updateData = async (): Promise<void> => {
 onMounted(() => {
 
     let id = parseInt(route.params.id);
-
+    getCategories();
+    getBrands();
     getElementById(id);
+
 })
 </script>

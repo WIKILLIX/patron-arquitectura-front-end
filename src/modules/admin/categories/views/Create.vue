@@ -57,7 +57,6 @@ const saveData = async (): Promise<void> => {
             router.push({ name: 'categoryList' });
         }, 1000);
     } catch (error) {
-        console.log(error);
         Swal.fire({
             icon: 'error',
             title: 'Se ha producido un error',
