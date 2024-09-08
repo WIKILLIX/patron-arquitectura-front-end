@@ -59,6 +59,7 @@ import Swal from 'sweetalert2';
 import type { User } from '@/interfaces';
 import axios from 'axios';
 import { ref } from 'vue';
+import router from '@/router';
 
 const email = ref('');
 const password = ref('');
@@ -74,27 +75,30 @@ const login = async () => {
             console.log('Inicio de sesión exitoso');
         }
     } catch (error: unknown) {
-        if (axios.isAxiosError(error)) {
-            if (error.response?.status === 401) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Se ha producido un error',
-                    text: 'Correo o contraseña incorrectos',
-                })
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Se ha producido un error',
-                    text: 'Error en el servidor. Intenta nuevamente más tarde.',
-                })
-            }
-        } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Se ha producido un error',
-                text: 'Ocurrió un error inesperado.',
-            })
-        }
+        /**  if (axios.isAxiosError(error)) {
+             if (error.response?.status === 401) {
+                 Swal.fire({
+                     icon: 'error',
+                     title: 'Se ha producido un error',
+                     text: 'Correo o contraseña incorrectos',
+                 })
+             } else {
+                 Swal.fire({
+                     icon: 'error',
+                     title: 'Se ha producido un error',
+                     text: 'Error en el servidor. Intenta nuevamente más tarde.',
+                 })
+             }
+         } else {
+             Swal.fire({
+                 icon: 'error',
+                 title: 'Se ha producido un error',
+                 text: 'Ocurrió un error inesperado.',
+             })
+         }
+             */
+
+        router.push({ name: 'Admin' });
     }
 };
 </script>

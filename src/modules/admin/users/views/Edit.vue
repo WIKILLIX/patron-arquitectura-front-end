@@ -1,6 +1,6 @@
 <template>
     <div class="w-full grid place-items-center">
-        <form @submit.prevent="saveData" class="w-96">
+        <form @submit.prevent="updateData" class="w-96">
             <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                 <div class="bg-white py-8 px-4 sm:rounded-lg sm:px-10">
                     <form @submit.prevent="updateData">
@@ -72,7 +72,7 @@ const getElementById = async (id: number): Promise<void> => {
         const { data } = await axios.get<User>(`http://localhost:8080/api/v1/users/${id}`);
         FormData.value = data;
 
-        FormData.value = response;
+        FormData.value = data;
     } catch (error) {
         Swal.fire({
             icon: 'error',
