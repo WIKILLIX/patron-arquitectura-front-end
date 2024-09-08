@@ -1,6 +1,7 @@
 export interface Smartphone {
     id?: number;
     name: string;
+    img: string;
     price: string;
     description: string;
     brand: {

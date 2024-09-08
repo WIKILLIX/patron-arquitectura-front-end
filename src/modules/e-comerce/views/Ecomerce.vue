@@ -1,6 +1,13 @@
 <template>
     <div class="flex gap-5 p-5">
         <aside>
+            <div class="pt-2 relative mx-auto text-gray-600 md:order-2">
+
+                <input
+                    class="border-2 border-gray-300 bg-white w-full h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none"
+                    type="search" name="search" placeholder="Search" v-model="search">
+
+            </div>
             <form @submit.prevent="filterProducts">
                 <div class="mt-6">
                     <label for="" class="block text-sm font-medium leading-5 text-gray-700">
@@ -18,10 +25,7 @@
                         marca
                     </label>
                     <select name="marca" id="marca" class="rounded p-1 border w-full" v-model="filters.brand">
-                        <option value="">Seleccionar</option>
-                        <option value="1">Marca 1</option>
-                        <option value="2">Marca 2</option>
-                        <option value="3">Marca 3</option>
+                        <option v-for="brand in brands" :value="brand.id" :key="brand.id">{{ brand.name }}</option>
                     </select>
                 </div>
                 <div>
@@ -41,11 +45,15 @@
 
 <script setup lang="ts">
 import CardComponent from '@/modules/global/components/CardComponent.vue';
-import { ref } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
-import type { Smartphone } from '@/interfaces';
+import type { Smartphone, Brand } from '@/interfaces';
+import Swal from 'sweetalert2';
+import _ from 'lodash';
 
-
+const brands = ref<Brand[]>([]);
+const products = ref<Smartphone[]>();
+const search = ref('');
 
 const filters = ref({
     price: {
@@ -55,48 +63,37 @@ const filters = ref({
     brand: ''
 });
 
-const products = ref<Smartphone[]>();
+watch(search, _.debounce((newQuestion: string) => {
+    if (newQuestion.length < 1) {
+        getDevices();
+    }
+    if (newQuestion.length > 4) {
+        axios.get<Smartphone[]>(`http://localhost:8080/api/v1/products/name=${newQuestion}`)
+            .then(response => {
+                products.value = response.data;
+            })
+            .catch(error => {
+                console.error('Error fetching products:', error);
+            });
+    }
+}, 500));
+
+const getBrands = async () => {
+    try {
+        const { data } = await axios.get('http://localhost:8080/api/v1/brands');
+        brands.value = data;
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Algo salio mal!',
+        });
+    }
+}
 
 const getDevices = async () => {
     try {
-        // const { data } = await axios.get('https://api.restful-api.dev/objects');
-        const data: Smartphone[] = [
-            {
-                id: 1,
-                name: 'Smartphone 1',
-                price: '1000',
-                model: 'Marca 1',
-                description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
-            },
-            {
-                id: 2,
-                name: 'Smartphone 2',
-                price: '2000',
-                model: 'Marca 2',
-                description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
-            },
-            {
-                id: 3,
-                name: 'Smartphone 3',
-                price: '3000',
-                model: 'Marca 3',
-                description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
-            },
-            {
-                id: 4,
-                name: 'Smartphone 4',
-                price: '4000',
-                model: 'Marca 4',
-                description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
-            },
-            {
-                id: 5,
-                name: 'Smartphone 5',
-                price: '5000',
-                model: 'Marca 5',
-                description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
-            },
-        ]
+        const { data } = await axios.get('http://localhost:8080/api/v1/products');
 
         products.value = data;
     } catch (error) {
@@ -113,8 +110,10 @@ const filterProducts = async () => {
         console.error(error);
     }
 }
-
-getDevices();
+onMounted(() => {
+    getBrands();
+    getDevices();
+});
 
 </script>
 

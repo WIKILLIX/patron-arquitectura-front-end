@@ -1,5 +1,5 @@
 <template>
-    <div class="container mx-auto">
+    <div class="container mx-auto p-5">
         <div class="flex flex-col gap-10">
             <div class="flex items-center justify-between mt-20">
                 <div class="grid place-items-center">
@@ -8,7 +8,8 @@
                 </div>
                 <main class="flex flex-col justify-between h-96 p-5 max-w-96">
                     <div>
-                        <h1 class="text-2xl font-semibold">{{ smartphone.name }} <small>{{ smartphone.model }}</small>
+                        <h1 class="text-2xl font-semibold">{{ smartphone.name }} <small>{{ smartphone.brand.name
+                                }}</small>
                         </h1>
                         <div class="flex items-center">
                             <svg class="w-4 h-4 text-yellow-300 ms-1" aria-hidden="true"
@@ -52,7 +53,7 @@
             </div>
             <div class="">
                 <h3>comentar: </h3>
-                <textarea rows="3" class="border rounded w-full h-20">
+                <textarea rows="3" class="border rounded w-full h-20" v-model="comment.comment">
 
                 </textarea>
                 <div class="text-right mt-4">
@@ -75,44 +76,76 @@
 
 <script setup lang="ts">
 import axios from 'axios';
-import type { Smartphone } from '@/interfaces';
-import { ref } from 'vue';
+import type { Smartphone, Comment, User } from '@/interfaces';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import Swal from 'sweetalert2';
+
+const route = useRoute();
 
 const smartphone = ref<Smartphone>({
-    id: 0,
     name: '',
-    price: '',
-    model: '',
+    price: '0',
     description: '',
+    brand: {
+        id: 0,
+    },
+    category: {
+        id: 0,
+    }
+});
+
+const comment = ref<Comment>({
+    comment: '',
+    product: {
+        id: 0,
+    },
+    user: {
+        id: 0,
+    }
 });
 
 const comentarios = ref<string[]>([]);
 
-const getData = async (): Promise<void> => {
+const getElementById = async (id: number): Promise<void> => {
     try {
-        // const { data } = await axios.get('https://api.restful-api.dev/objects');
-        const data = {
-            smartphone: {
-                id: 1,
-                name: 'Samsung Galaxy S21',
-                price: '1000',
-                model: 'S21',
-                description: 'Samsung Galaxy S21 5G Android smartphone. Announced Jan 2021. Features 6.2″ display, Exynos 2100 chipset, 4000 mAh battery, 256 GB storage, 8 GB RAM, Corning Gorilla Glass Victus.',
-            },
-            comentarios: [
-                'Excelente producto',
-                'Muy buen producto',
-                'No me gusto el producto',
-            ]
-        }
-        smartphone.value = data.smartphone;
-        comentarios.value = data.comentarios;
+        const { data } = await axios.get<Smartphone>(`http://localhost:8080/api/v1/products/${id}`);
+        smartphone.value = data;
     } catch (error) {
-        console.error(error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Se ha producido un error',
+            text: 'Intente nuevamente',
+        })
     }
 }
 
-getData();
+const getUserById = async (id: number): Promise<void> => {
+    try {
+        const { data } = await axios.get<User>(`http://localhost:8080/api/v1/users/${id}`);
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Se ha producido un error',
+            text: 'Intente nuevamente',
+        })
+    }
+}
+
+const addComment = () => {
+    try {
+        //comment.value.product.id = smartphone.value.id;
+        const { data } = axios.post('http://localhost:8080/api/v1/comments', comment.value);
+    } catch (error) {
+
+    }
+}
+
+onMounted(() => {
+    let id = parseInt(route.params.id);
+
+    getElementById(id);
+})
 </script>
 
 <style scoped></style>

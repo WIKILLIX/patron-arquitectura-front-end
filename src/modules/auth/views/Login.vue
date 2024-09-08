@@ -23,6 +23,7 @@
                         </label>
                         <div class="mt-1 relative rounded-md shadow-sm">
                             <input id="email" name="email" placeholder="user@example.com" type="email" required
+                                v-model="email"
                                 class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5">
                         </div>
                     </div>
@@ -32,7 +33,7 @@
                             Contraseña
                         </label>
                         <div class="mt-1 rounded-md shadow-sm">
-                            <input id="password" name="password" type="password" required
+                            <input id="password" name="password" type="password" required v-model="password"
                                 class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5">
                         </div>
                     </div>
@@ -55,13 +56,45 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
 import Swal from 'sweetalert2';
+import type { User } from '@/interfaces';
+import axios from 'axios';
+import { ref } from 'vue';
 
-const login = () => {
-    Swal.fire({
-        title: '¡Bienvenido!',
-        text: 'Has iniciado sesión correctamente',
-        icon: 'success',
-        confirmButtonText: 'Aceptar'
-    });
-}
+const email = ref('');
+const password = ref('');
+
+const login = async () => {
+    try {
+        const response = await axios.post('http://localhost:8080/api/v1/login', {
+            email: email.value,
+            password: password.value
+        });
+        if (response.status === 200) {
+            // Aquí podrías redirigir al usuario a otra página o mostrar un mensaje de éxito
+            console.log('Inicio de sesión exitoso');
+        }
+    } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+            if (error.response?.status === 401) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Se ha producido un error',
+                    text: 'Correo o contraseña incorrectos',
+                })
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Se ha producido un error',
+                    text: 'Error en el servidor. Intenta nuevamente más tarde.',
+                })
+            }
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Se ha producido un error',
+                text: 'Ocurrió un error inesperado.',
+            })
+        }
+    }
+};
 </script>

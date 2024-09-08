@@ -69,13 +69,8 @@ const FormData = ref<User>({
 
 const getElementById = async (id: number): Promise<void> => {
     try {
-        // const response = await axios.get(`http://localhost:3000/api/users/${id}`);
-        const response = {
-            id: 1,
-            name: 'john doe',
-            email: 'jhon@email.com',
-            password: '123456'
-        };
+        const { data } = await axios.get<User>(`http://localhost:8080/api/v1/users/${id}`);
+        FormData.value = data;
 
         FormData.value = response;
     } catch (error) {
@@ -89,13 +84,20 @@ const getElementById = async (id: number): Promise<void> => {
 
 const updateData = async (): Promise<void> => {
     try {
-        await axios.put<User>(`http://localhost:3000/api/users/${FormData.value.id}`, FormData);
+        await axios.post<User>(`http://localhost:8080/api/v1/users`, FormData.value);
         Swal.fire({
             icon: 'success',
             title: 'Producto actualizado correctamente',
             showConfirmButton: false,
             timer: 1000
         })
+
+        FormData.value = {
+            id: 0,
+            name: '',
+            email: '',
+            password: ''
+        };
     } catch (error) {
         Swal.fire({
             icon: 'error',

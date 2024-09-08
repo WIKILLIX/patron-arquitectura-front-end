@@ -23,21 +23,21 @@
                 </tr>
             </thead>
             <tbody>
-                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        #1
-                    </th>
+                <tr v-for="user in users" :key="user.id">
                     <td class="px-6 py-4">
-                        joe doe
+                        {{ user.id }}
                     </td>
                     <td class="px-6 py-4">
-                        joe@email.com
+                        {{ user.name }}
+                    </td>
+                    <td class="px-6 py-4">
+                        {{ user.email }}
                     </td>
                     <td class="px-6 py-4">
                         <div class="flex gap-1">
-                            <router-link :to="{ name: 'userEdit', params: { id: 1 } }" type="button" role="button"
+                            <router-link :to="{ name: 'userEdit', params: { id: user.id } }" type="button" role="button"
                                 class="btn-warning">Editar</router-link>
-                            <button class="btn-danger" @click="deleteProduct(1)">Eliminar</button>
+                            <button class="btn-danger" @click="deleteUser(user.id)">Eliminar</button>
                         </div>
                     </td>
                 </tr>
@@ -50,8 +50,25 @@
 import { RouterLink } from 'vue-router';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import type { User } from '@/interfaces';
+import { ref, onMounted } from 'vue';
 
-const deleteProduct = (id: number) => {
+const users = ref<User[]>();
+
+const getData = async () => {
+    try {
+        const { data } = await axios.get<User[]>('http://localhost:8080/api/v1/users');
+        users.value = data;
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Algo salio mal!',
+        });
+    }
+};
+
+const deleteUser = (id: number) => {
     Swal.fire({
         title: "Esta seguro?",
         text: "Esta accion es irreversible!",
@@ -62,13 +79,14 @@ const deleteProduct = (id: number) => {
         confirmButtonText: "Si, Eliminalo!"
     }).then((result) => {
         if (result.isConfirmed) {
-            axios.delete(`http://localhost:3000/api/users/${id}`).then(() => {
+            axios.delete(`http://localhost:8080/api/v1/users/${id}`).then(() => {
                 Swal.fire({
                     icon: "success",
                     title: "El usuario fue eliminado",
                     showConfirmButton: false,
                     timer: 1000,
                 });
+                users.value = users.value?.filter((user) => user.id !== id);
             }).catch(() => {
                 Swal.fire({
                     icon: "error",
@@ -79,5 +97,8 @@ const deleteProduct = (id: number) => {
             });
         }
     });
-};  
+};
+onMounted(() => {
+    getData();
+});
 </script>

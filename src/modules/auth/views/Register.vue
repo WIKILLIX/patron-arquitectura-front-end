@@ -20,6 +20,7 @@
                         <label for="email" class="block text-sm font-medium leading-5  text-gray-700">Nombres</label>
                         <div class="mt-1 relative rounded-md shadow-sm">
                             <input id="name" name="name" placeholder="John Doe" type="text" required
+                                v-model="FormData.name"
                                 class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5">
                         </div>
                     </div>
@@ -30,6 +31,7 @@
                         </label>
                         <div class="mt-1 relative rounded-md shadow-sm">
                             <input id="email" name="email" placeholder="user@example.com" type="email" required
+                                v-model="FormData.email"
                                 class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5">
                         </div>
                     </div>
@@ -39,17 +41,19 @@
                             Contraseña
                         </label>
                         <div class="mt-1 rounded-md shadow-sm">
-                            <input id="password" name="password" type="password" required
+                            <input id="password" name="password_confirmation" type="password" required
+                                v-model="FormData.password"
                                 class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5">
                         </div>
                     </div>
 
                     <div class="mt-6">
-                        <label for="password_confirmation" class="block text-sm font-medium leading-5 text-gray-700">
+                        <label for="passwordConfirmation" class="block text-sm font-medium leading-5 text-gray-700">
                             Confirmar contraseña
                         </label>
                         <div class="mt-1 rounded-md shadow-sm">
-                            <input id="password_confirmation" name="password_confirmation" type="password" required
+                            <input id="passwordConfirmation" name="passwordConfirmation" type="password" required
+                                v-model="FormData2.password"
                                 class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5">
                         </div>
                     </div>
@@ -72,13 +76,60 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
 import Swal from 'sweetalert2';
+import axios from 'axios';
+import type { User } from '@/interfaces';
+import { ref } from 'vue';
+import router from '@/router';
 
-const register = () => {
-    Swal.fire({
-        title: '¡Bienvenido!',
-        text: 'Has creado tu cuenta correctamente',
-        icon: 'success',
-        confirmButtonText: 'Aceptar'
-    });
+const passwordConfirmation = ref('');
+
+const FormData = ref<User>({
+    id: 0,
+    name: '',
+    email: '',
+    password: ''
+});
+
+const FormData2 = ref<any>({
+    password: ''
+});
+
+const register = async (): Promise<void> => {
+
+    if (FormData.value.password !== FormData2.value.password) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Contraseñas no coinciden',
+            text: 'La contraseña y la confirmación de contraseña deben coincidir.',
+        });
+        return;
+    }
+
+    try {
+        await axios.post<User>('http://localhost:8080/api/v1/users', FormData.value);
+        Swal.fire({
+            title: '¡Bienvenido!',
+            text: 'Has creado tu cuenta correctamente',
+            icon: 'success',
+            confirmButtonText: 'Aceptar',
+            timer: 1000
+        });
+        router.push({ name: '/' });
+        FormData.value = {
+            id: 0,
+            name: '',
+            email: '',
+            password: ''
+        };
+        FormData2.value = {
+            password: ''
+        };
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Se ha producido un error',
+            text: 'Intente nuevamente',
+        });
+    }
 }
 </script>
