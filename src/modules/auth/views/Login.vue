@@ -22,8 +22,7 @@
                             Email
                         </label>
                         <div class="mt-1 relative rounded-md shadow-sm">
-                            <input id="email" name="email" placeholder="user@example.com" type="email" required
-                                v-model="email"
+                            <input id="username" placeholder="username" type="text" required v-model="username"
                                 class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5">
                         </div>
                     </div>
@@ -56,47 +55,46 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
 import Swal from 'sweetalert2';
-import type { User } from '@/interfaces';
 import axios from 'axios';
 import { ref } from 'vue';
 import router from '@/router';
 
-const email = ref('');
+const username = ref('');
 const password = ref('');
 
 const login = async () => {
     try {
-        const response = await axios.post('http://localhost:8080/api/v1/login', {
-            email: email.value,
+        const response = await axios.post('http://localhost:8080/api/v1/users/loginUser', {
+            username: username.value,
             password: password.value
         });
+
         if (response.status === 200) {
-            // Aquí podrías redirigir al usuario a otra página o mostrar un mensaje de éxito
-            console.log('Inicio de sesión exitoso');
+            localStorage.setItem('token', response.data);
+            router.push({ name: 'Admin' });
         }
     } catch (error: unknown) {
-        /**  if (axios.isAxiosError(error)) {
-             if (error.response?.status === 401) {
-                 Swal.fire({
-                     icon: 'error',
-                     title: 'Se ha producido un error',
-                     text: 'Correo o contraseña incorrectos',
-                 })
-             } else {
-                 Swal.fire({
-                     icon: 'error',
-                     title: 'Se ha producido un error',
-                     text: 'Error en el servidor. Intenta nuevamente más tarde.',
-                 })
-             }
-         } else {
-             Swal.fire({
-                 icon: 'error',
-                 title: 'Se ha producido un error',
-                 text: 'Ocurrió un error inesperado.',
-             })
-         }
-             */
+        if (axios.isAxiosError(error)) {
+            if (error.response?.status === 401) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Se ha producido un error',
+                    text: 'Correo o contraseña incorrectos',
+                })
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Se ha producido un error',
+                    text: 'Error en el servidor. Intenta nuevamente más tarde.',
+                })
+            }
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Se ha producido un error',
+                text: 'Ocurrió un error inesperado.',
+            })
+        }
 
         router.push({ name: 'Admin' });
     }

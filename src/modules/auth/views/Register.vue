@@ -20,18 +20,7 @@
                         <label for="email" class="block text-sm font-medium leading-5  text-gray-700">Nombres</label>
                         <div class="mt-1 relative rounded-md shadow-sm">
                             <input id="name" name="name" placeholder="John Doe" type="text" required
-                                v-model="FormData.name"
-                                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5">
-                        </div>
-                    </div>
-
-                    <div class="mt-6">
-                        <label for="email" class="block text-sm font-medium leading-5 text-gray-700">
-                            Email
-                        </label>
-                        <div class="mt-1 relative rounded-md shadow-sm">
-                            <input id="email" name="email" placeholder="user@example.com" type="email" required
-                                v-model="FormData.email"
+                                v-model="FormData.username"
                                 class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5">
                         </div>
                     </div>
@@ -81,12 +70,9 @@ import type { User } from '@/interfaces';
 import { ref } from 'vue';
 import router from '@/router';
 
-const passwordConfirmation = ref('');
-
 const FormData = ref<User>({
     id: 0,
-    name: '',
-    email: '',
+    username: '',
     password: ''
 });
 
@@ -106,7 +92,11 @@ const register = async (): Promise<void> => {
     }
 
     try {
-        await axios.post<User>('http://localhost:8080/api/v1/users', FormData.value);
+        const { data } = await axios.post<User>('http://localhost:8080/api/v1/users/registerUser', {
+            username: FormData.value.username,
+            password: FormData.value.password,
+            role: 'ADMIN'
+        });
         Swal.fire({
             title: '¡Bienvenido!',
             text: 'Has creado tu cuenta correctamente',
@@ -114,16 +104,7 @@ const register = async (): Promise<void> => {
             confirmButtonText: 'Aceptar',
             timer: 1000
         });
-        router.push({ name: '/' });
-        FormData.value = {
-            id: 0,
-            name: '',
-            email: '',
-            password: ''
-        };
-        FormData2.value = {
-            password: ''
-        };
+        await router.push({ name: 'Login' });
     } catch (error) {
         Swal.fire({
             icon: 'error',

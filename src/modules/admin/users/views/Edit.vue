@@ -9,18 +9,7 @@
                                 class="block text-sm font-medium leading-5  text-gray-700">Nombres</label>
                             <div class="mt-1 relative rounded-md shadow-sm">
                                 <input id="name" name="name" placeholder="John Doe" type="text" required
-                                    v-model="FormData.name"
-                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5">
-                            </div>
-                        </div>
-
-                        <div class="mt-6">
-                            <label for="email" class="block text-sm font-medium leading-5 text-gray-700">
-                                Email
-                            </label>
-                            <div class="mt-1 relative rounded-md shadow-sm">
-                                <input id="email" name="email" placeholder="user@example.com" type="email" required
-                                    v-model="FormData.email"
+                                    v-model="FormData.username"
                                     class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5">
                             </div>
                         </div>
@@ -62,16 +51,17 @@ const route = useRoute();
 
 const FormData = ref<User>({
     id: 0,
-    name: '',
-    email: '',
+    username: '',
     password: ''
 });
 
 const getElementById = async (id: number): Promise<void> => {
     try {
-        const { data } = await axios.get<User>(`http://localhost:8080/api/v1/users/${id}`);
-        FormData.value = data;
-
+        const { data } = await axios.get<User>(`http://localhost:8080/api/v1/users/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         FormData.value = data;
     } catch (error) {
         Swal.fire({
@@ -84,7 +74,11 @@ const getElementById = async (id: number): Promise<void> => {
 
 const updateData = async (): Promise<void> => {
     try {
-        await axios.post<User>(`http://localhost:8080/api/v1/users`, FormData.value);
+        await axios.post<User>(`http://localhost:8080/api/v1/users/registerUser`, FormData.value, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         Swal.fire({
             icon: 'success',
             title: 'Producto actualizado correctamente',
@@ -94,8 +88,7 @@ const updateData = async (): Promise<void> => {
 
         FormData.value = {
             id: 0,
-            name: '',
-            email: '',
+            username: '',
             password: ''
         };
     } catch (error) {

@@ -34,7 +34,11 @@ const FormData = ref<Category>({
 
 const getElementById = async (id: number): Promise<void> => {
     try {
-        const { data } = await axios.get<Category>(`http://localhost:8080/api/v1/categories/${id}`);
+        const { data } = await axios.get<Category>(`http://localhost:8080/api/v1/categories/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         FormData.value = data;
 
     } catch (error) {
@@ -48,11 +52,13 @@ const getElementById = async (id: number): Promise<void> => {
 
 const updateData = async (): Promise<void> => {
     try {
-        await axios.post<Category>(`http://localhost:8080/api/v1/categories`, FormData.value);
+        await axios.post<Category>(`http://localhost:8080/api/v1/categories`, FormData.value, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
 
-        setTimeout(() => {
-            router.push({ name: 'categoryList' });
-        }, 1000);
+        await router.push({ name: 'categoryList' });
 
         Swal.fire({
             icon: 'success',

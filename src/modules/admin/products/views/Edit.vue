@@ -28,13 +28,6 @@
                 </div>
             </div>
             <div>
-                <label for="img" class="block text-sm font-medium leading-6 text-gray-900">Img</label>
-                <div class="mt-2">
-                    <input id="img" name="img" type="text" autocomplete="img" required v-model="FormData.img"
-                        class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                </div>
-            </div>
-            <div>
                 <label for="price" class="block text-sm font-medium leading-6 text-gray-900">Precio</label>
                 <div class="mt-2">
                     <input id="price" name="price" type="text" autocomplete="price" required v-model="FormData.price"
@@ -84,7 +77,11 @@ const brands = ref<Brand[]>([]);
 
 const getCategories = async () => {
     try {
-        const { data } = await axios.get('http://localhost:8080/api/v1/categories');
+        const { data } = await axios.get('http://localhost:8080/api/v1/categories', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         categories.value = data;
     } catch (error) {
         Swal.fire({
@@ -97,7 +94,11 @@ const getCategories = async () => {
 
 const getBrands = async () => {
     try {
-        const { data } = await axios.get('http://localhost:8080/api/v1/brands');
+        const { data } = await axios.get('http://localhost:8080/api/v1/brands', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         brands.value = data;
     } catch (error) {
         Swal.fire({
@@ -110,7 +111,11 @@ const getBrands = async () => {
 
 const getElementById = async (id: number): Promise<void> => {
     try {
-        const { data } = await axios.get<Smartphone>(`http://localhost:8080/api/v1/products/${id}`);
+        const { data } = await axios.get<Smartphone>(`http://localhost:8080/api/v1/products/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         FormData.value = data;
     } catch (error) {
         Swal.fire({
@@ -123,16 +128,20 @@ const getElementById = async (id: number): Promise<void> => {
 
 const updateData = async (): Promise<void> => {
     try {
-        await axios.post<Smartphone>(`http://localhost:8080/api/v1/products`, FormData.value);
+        await axios.post<Smartphone>(`http://localhost:8080/api/v1/products`, FormData.value, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         Swal.fire({
             icon: 'success',
             title: 'Producto actualizado correctamente',
             showConfirmButton: false,
             timer: 1000
         })
-        setTimeout(() => {
-            router.push({ name: 'Products' });
-        }, 1000);
+
+        await router.push({ name: 'Products' });
+
     } catch (error) {
         Swal.fire({
             icon: 'error',

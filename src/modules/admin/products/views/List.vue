@@ -29,7 +29,8 @@
                 </tr>
             </thead>
             <tbody>
-                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700" v-for="product in products" :key="product.id">
+                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700" v-for="product in products"
+                    :key="product.id">
                     <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                         {{ product.id }}
                     </th>
@@ -47,8 +48,8 @@
                     </td>
                     <td class="px-6 py-4">
                         <div class="flex gap-1">
-                            <router-link :to="{ name: 'productEdit', params: { id: product.id } }" type="button" role="button"
-                                class="btn-warning">Editar</router-link>
+                            <router-link :to="{ name: 'productEdit', params: { id: product.id } }" type="button"
+                                role="button" class="btn-warning">Editar</router-link>
                             <button class="btn-danger" @click="deleteProduct(product.id)">Eliminar</button>
                         </div>
                     </td>
@@ -69,7 +70,11 @@ const products = ref<Smartphone[]>();
 
 const getData = async () => {
     try {
-        const { data } = await axios.get('http://localhost:8080/api/v1/products');
+        const { data } = await axios.get('http://localhost:8080/api/v1/products', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         products.value = data;
     } catch (error) {
         Swal.fire({
@@ -91,7 +96,11 @@ const deleteProduct = (id: number) => {
         confirmButtonText: "Si, Eliminalo!"
     }).then((result) => {
         if (result.isConfirmed) {
-            axios.delete(`http://localhost:8080/api/v1/products/${id}`).then(() => {
+            axios.delete(`http://localhost:8080/api/v1/products/${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            }).then(() => {
                 products.value = products.value?.filter((product) => product.id !== id);
                 Swal.fire({
                     icon: "success",
@@ -109,7 +118,7 @@ const deleteProduct = (id: number) => {
             });
         }
     });
-};  
+};
 
 onMounted(() => {
     getData();

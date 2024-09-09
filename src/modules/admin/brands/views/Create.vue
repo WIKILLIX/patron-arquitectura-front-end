@@ -43,7 +43,11 @@ const FormData = ref<Brand>({
 
 const saveData = async (): Promise<void> => {
     try {
-        const { data } = await axios.post('http://localhost:8080/api/v1/brands', FormData.value);
+        const { data } = await axios.post('http://localhost:8080/api/v1/brands', FormData.value, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
 
         Swal.fire({
             icon: 'success',
@@ -52,9 +56,9 @@ const saveData = async (): Promise<void> => {
             timer: 1000
         })
 
-        setTimeout(() => {
-            router.push({ name: 'brandList' });
-        }, 1000);
+
+        await router.push({ name: 'brandList' });
+
     } catch (error) {
         console.log(error);
         Swal.fire({

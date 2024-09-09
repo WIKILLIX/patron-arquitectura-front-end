@@ -21,7 +21,7 @@ import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import Swal from 'sweetalert2';
 import { useRoute } from 'vue-router';
-import type { Brand } from '../../../../interfaces';
+import type { Brand, Category } from '../../../../interfaces';
 import router from '@/router';
 
 const route = useRoute();
@@ -34,7 +34,11 @@ const FormData = ref<Brand>({
 
 const getElementById = async (id: number): Promise<void> => {
     try {
-        const { data } = await axios.get<Brand>(`http://localhost:8080/api/v1/brands/${id}`);
+        const { data } = await axios.get<Brand>(`http://localhost:8080/api/v1/brands/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         FormData.value = data;
 
     } catch (error) {
@@ -48,11 +52,11 @@ const getElementById = async (id: number): Promise<void> => {
 
 const updateData = async (): Promise<void> => {
     try {
-        await axios.post<Category>(`http://localhost:8080/api/v1/brands`, FormData.value);
-
-        setTimeout(() => {
-            router.push({ name: 'brandList' });
-        }, 1000);
+        await axios.post<Category>(`http://localhost:8080/api/v1/brands`, FormData.value, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
 
         Swal.fire({
             icon: 'success',
@@ -60,6 +64,9 @@ const updateData = async (): Promise<void> => {
             showConfirmButton: false,
             timer: 1000
         })
+
+        await router.push({ name: 'brandList' });
+
     } catch (error) {
         Swal.fire({
             icon: 'error',

@@ -9,17 +9,7 @@
 
             </div>
             <form @submit.prevent="filterProducts">
-                <div class="mt-6">
-                    <label for="" class="block text-sm font-medium leading-5 text-gray-700">
-                        Precio
-                    </label>
-                    <div class="flex gap-3 justify-center items-center">
-                        <input type="number" placeholder="min" min="0" class="border rounded p-1"
-                            v-model="filters.price.min">
-                        <input type="number" placeholder="max" max="9999999" class="border rounded p-1"
-                            v-model="filters.price.max">
-                    </div>
-                </div>
+
                 <div class="mt-6">
                     <label for="marca" class="block text-sm font-medium leading-5 text-gray-700">
                         marca
@@ -60,7 +50,7 @@ const filters = ref({
         min: '',
         max: ''
     },
-    brand: ''
+    brand: 0
 });
 
 watch(search, _.debounce((newQuestion: string) => {
@@ -68,7 +58,11 @@ watch(search, _.debounce((newQuestion: string) => {
         getDevices();
     }
     if (newQuestion.length > 4) {
-        axios.get<Smartphone[]>(`http://localhost:8080/api/v1/products/name=${newQuestion}`)
+        axios.get<Smartphone[]>(`http://localhost:8080/api/v1/products/name=${newQuestion}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        })
             .then(response => {
                 products.value = response.data;
             })
@@ -80,7 +74,11 @@ watch(search, _.debounce((newQuestion: string) => {
 
 const getBrands = async () => {
     try {
-        const { data } = await axios.get('http://localhost:8080/api/v1/brands');
+        const { data } = await axios.get('http://localhost:8080/api/v1/brands', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         brands.value = data;
     } catch (error) {
         Swal.fire({
@@ -93,7 +91,11 @@ const getBrands = async () => {
 
 const getDevices = async () => {
     try {
-        const { data } = await axios.get('http://localhost:8080/api/v1/products');
+        const { data } = await axios.get('http://localhost:8080/api/v1/products', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
 
         products.value = data;
     } catch (error) {
@@ -103,7 +105,12 @@ const getDevices = async () => {
 
 const filterProducts = async () => {
     try {
-        const { data } = await axios.post('http://localhost:3000/products', filters.value);
+        const brand = brands.value.find(brand => brand.id === filters.value.brand);
+        const { data } = await axios.post('http://localhost:8080/api/v1/products/productsByBrand', brand, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
 
         products.value = data;
     } catch (error) {

@@ -51,7 +51,11 @@ const brands = ref<Brand[]>();
 
 const getData = async () => {
     try {
-        const { data } = await axios.get<Brand[]>('http://localhost:8080/api/v1/brands');
+        const { data } = await axios.get<Brand[]>('http://localhost:8080/api/v1/brands', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         brands.value = data;
     } catch (error) {
         Swal.fire({
@@ -73,7 +77,11 @@ const deleteProduct = (id: number) => {
         confirmButtonText: "Si, Eliminalo!"
     }).then((result) => {
         if (result.isConfirmed) {
-            axios.delete(`http://localhost:8080/api/v1/brands/${id}`).then(() => {
+            axios.delete(`http://localhost:8080/api/v1/brands/${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            }).then(() => {
                 Swal.fire({
                     icon: "success",
                     title: "La marca fue eliminada",
@@ -91,7 +99,7 @@ const deleteProduct = (id: number) => {
             });
         }
     });
-};  
+};
 
 onMounted(() => {
     getData();

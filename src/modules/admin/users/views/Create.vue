@@ -8,20 +8,11 @@
                             <label for="email" class="block text-sm font-medium leading-5  text-gray-700">Nombre</label>
                             <div class="mt-1 relative rounded-md shadow-sm">
                                 <input id="name" name="name" placeholder="John Doe" type="text" required
-                                    v-model="FormData.name"
+                                    v-model="FormData.username"
                                     class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5">
                             </div>
                         </div>
-                        <div class="mt-6">
-                            <label for="email" class="block text-sm font-medium leading-5 text-gray-700">
-                                Email
-                            </label>
-                            <div class="mt-1 relative rounded-md shadow-sm">
-                                <input id="email" name="email" placeholder="user@example.com" type="email" required
-                                    v-model="FormData.email"
-                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5">
-                            </div>
-                        </div>
+
 
                         <div class="mt-6">
                             <label for="password" class="block text-sm font-medium leading-5 text-gray-700">
@@ -58,15 +49,17 @@ import Swal from 'sweetalert2';
 import { ref } from 'vue';
 
 const FormData = ref<User>({
-    id: 0,
-    name: '',
-    email: '',
+    username: '',
     password: ''
 });
 
 const saveData = async (): Promise<void> => {
     try {
-        await axios.post<User>('http://localhost:8080/api/v1/users', FormData.value);
+        await axios.post<User>('http://localhost:8080/api/v1/users/registerUser', FormData.value, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         Swal.fire({
             icon: 'success',
             title: 'Usuario creado correctamente',
@@ -74,11 +67,7 @@ const saveData = async (): Promise<void> => {
             timer: 1000
         })
         router.push({ name: 'userList' });
-        FormData.value = {
-            name: '',
-            email: '',
-            password: ''
-        };
+
     } catch (error) {
         Swal.fire({
             icon: 'error',

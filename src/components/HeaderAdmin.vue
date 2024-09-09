@@ -30,10 +30,10 @@
                                 id="menu-item-1">Support</a>
                             <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1"
                                 id="menu-item-2">License</a> -->
-                            <form method="POST" action="#" role="none">
-                                <button type="submit" class="block w-full px-4 py-2 text-left text-sm text-gray-700"
-                                    role="menuitem" tabindex="-1" id="menu-item-3">Sign out</button>
-                            </form>
+
+                            <button type="submit" class="block w-full px-4 py-2 text-left text-sm text-gray-700"
+                                @click="logout" role="menuitem" tabindex="-1" id="menu-item-3">Sign out</button>
+
                         </div>
                     </div>
                 </div>
@@ -46,6 +46,13 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 const dropdown = ref(false);
+import { useAuthStore } from '../stores/auth';
+import router from '@/router';
+
+const logout = () => {
+    useAuthStore().logout();
+    router.push({ name: 'Login' });
+}
 </script>
 
 <style scoped></style>

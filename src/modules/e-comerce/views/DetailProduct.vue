@@ -109,7 +109,11 @@ const comentarios = ref<string[]>([]);
 
 const getElementById = async (id: number): Promise<void> => {
     try {
-        const { data } = await axios.get<Smartphone>(`http://localhost:8080/api/v1/products/${id}`);
+        const { data } = await axios.get<Smartphone>(`http://localhost:8080/api/v1/products/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         smartphone.value = data;
     } catch (error) {
         Swal.fire({
@@ -122,7 +126,11 @@ const getElementById = async (id: number): Promise<void> => {
 
 const getUserById = async (id: number): Promise<void> => {
     try {
-        const { data } = await axios.get<User>(`http://localhost:8080/api/v1/users/${id}`);
+        const { data } = await axios.get<User>(`http://localhost:8080/api/v1/users/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
     } catch (error) {
         Swal.fire({
             icon: 'error',

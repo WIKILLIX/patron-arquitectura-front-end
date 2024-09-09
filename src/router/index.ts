@@ -1,12 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { h, resolveComponent } from 'vue'
+import { useAuthStore } from '../stores/auth'
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
 	routes: [
 		{
 			path: '/',
-			redirect: '/login',
+			redirect: '/admin'
 		},
 		{
 			path: '/admin',
@@ -161,5 +162,16 @@ const router = createRouter({
 		return { top: 0 }
 	}
 })
+
+router.beforeEach((to, from, next) => {
+	const store = useAuthStore()
+	
+	if((to.name !== 'Login' && to.name !== 'Register') && !store.isAuthenticated){
+		next({name: 'Login'})
+	}else{
+		next()
+	}
+})
+
 
 export default router

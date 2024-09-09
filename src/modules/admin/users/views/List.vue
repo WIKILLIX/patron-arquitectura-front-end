@@ -14,12 +14,8 @@
                     <th scope="col" class="px-6 py-3">
                         Nombre
                     </th>
-                    <th scope="col" class="px-6 py-3">
-                        correo
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Action
-                    </th>
+
+
                 </tr>
             </thead>
             <tbody>
@@ -28,18 +24,10 @@
                         {{ user.id }}
                     </td>
                     <td class="px-6 py-4">
-                        {{ user.name }}
+                        {{ user.username }}
                     </td>
-                    <td class="px-6 py-4">
-                        {{ user.email }}
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex gap-1">
-                            <router-link :to="{ name: 'userEdit', params: { id: user.id } }" type="button" role="button"
-                                class="btn-warning">Editar</router-link>
-                            <button class="btn-danger" @click="deleteUser(user.id)">Eliminar</button>
-                        </div>
-                    </td>
+
+
                 </tr>
             </tbody>
         </table>
@@ -57,7 +45,11 @@ const users = ref<User[]>();
 
 const getData = async () => {
     try {
-        const { data } = await axios.get<User[]>('http://localhost:8080/api/v1/users');
+        const { data } = await axios.get<User[]>('http://localhost:8080/api/v1/users', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         users.value = data;
     } catch (error) {
         Swal.fire({
